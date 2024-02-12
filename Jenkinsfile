@@ -19,6 +19,8 @@ node {
     stage('Generate Javadoc') {
         dir('demo') {
             sh "'${mvnHome}/bin/mvn' javadoc:javadoc"
+            // Ajouter une étape de débogage pour lister les fichiers générés
+            sh 'ls -l target/site'
         }
     }
 
@@ -31,11 +33,5 @@ node {
         }
     }
 
-    stage('Generate Javadoc') {
-        dir('demo') {
-            sh "'${mvnHome}/bin/mvn' javadoc:javadoc"
-            // Ajouter une étape de débogage pour lister les fichiers générés
-            sh 'ls -l target/site'
-        }
-    }
+
 }
