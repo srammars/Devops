@@ -15,4 +15,19 @@ node {
             sh "'${mvnHome}/bin/mvn' -B -DskipTests clean package"
         }
     }
+
+    stage('Generate Javadoc') {
+        dir('demo') {
+            sh "'${mvnHome}/bin/mvn' javadoc:javadoc"
+        }
+    }
+
+    stage('Publish Javadoc') {
+        // Supposons que la Javadoc est générée dans 'demo/target/site/apidocs' après la construction du projet.
+        dir('demo/target/site/apidocs') {
+            // Ici vous pouvez définir comment vous voulez publier la Javadoc.
+            // Par exemple, vous pouvez utiliser `archiveArtifacts` pour archiver la Javadoc dans Jenkins.
+            archiveArtifacts artifacts: '**/apidocs/**/*', allowEmptyArchive: true
+        }
+    }
 }
