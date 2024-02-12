@@ -4,7 +4,7 @@ pipeline {
         pollSCM('H/3 * * * *')
     }
     tools {
-        maven 'M3' // Assurez-vous que 'M3' correspond au nom de votre installation Maven configurée dans Jenkins.
+        maven 'maven-3.5.2' // Assurez-vous que 'M3' correspond au nom de votre installation Maven configurée dans Jenkins.
     }
     stages {
         stage('Clone repo') {
