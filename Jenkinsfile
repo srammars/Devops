@@ -6,6 +6,8 @@ node {
     }
 
     stage('Build project'){
-        sh"'${mvnHome}/bin/mvn' -B -DskipTests clean package"
+        dir('demo') { // Changez le répertoire courant en 'demo' où se trouve le pom.xml.
+            sh "'${mvnHome}/bin/mvn' -B -DskipTests clean package"
+        }
     }
 }
