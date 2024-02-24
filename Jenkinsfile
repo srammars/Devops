@@ -16,26 +16,30 @@ pipeline {
             steps {
                 dir('demo') {
                     script {
-                        sh "${MVN_HOME}/bin/mvn -B -DskipTests clean package"
+                        sh "${MVN_HOME}/bin/mvn -B clean package"
                     }
                 }
             }
         }
 
-        stage('Generate Javadoc') {
+        stage('Run Tests') {
+            steps {
+                dir('demo') {
+                    script {
+                        sh "${MVN_HOME}/bin/mvn test"
+                    }
+                }
+            }
+        }
+
+        stage('Archive Javadoc and Test Results') {
             steps {
                 dir('demo') {
                     script {
                         sh "${MVN_HOME}/bin/mvn javadoc:javadoc"
-                        sh 'ls -l target/site'
+                        archiveArtifacts artifacts: ['target/site/apidocs/**/*', 'target/surefire-reports/**/*.xml'], allowEmptyArchive: true
                     }
                 }
-            }
-        }
-
-        stage('Archive Javadoc') {
-            steps {
-                archiveArtifacts artifacts: 'demo/target/site/apidocs/**/*', allowEmptyArchive: true
             }
         }
     }
