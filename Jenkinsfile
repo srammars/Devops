@@ -1,32 +1,46 @@
-node {  
-    def mvnHome = tool 'maven-3.5.2'
+pipeline {
+    agent any
 
-    stage('Clone repo'){
-        git branch: 'devops', url: 'https://github.com/srammars/Devops.git'
+    tools {
+        // Define the Maven tool
+        maven 'maven-3.5.2'
     }
 
-    stage('Build project'){
-        dir('demo') { // Change le répertoire courant en 'demo' où se trouve le pom.xml.
-            // Compile le projet sans exécuter les tests
-            sh "'${mvnHome}/bin/mvn' -B -DskipTests clean package"
-            
-            // Génère le Javadoc
-            sh "'${mvnHome}/bin/mvn' javadoc:javadoc"
+    stages {
+        stage('Clone repo') {
+            steps {
+                // Clone the repository with the specified branch
+                git branch: 'devops', url: 'https://github.com/srammars/Devops.git'
+            }
+        }
+
+        stage('Build project') {
+            steps {
+                dir('demo') {
+                    // Build the project, skipping tests
+                    sh "'${tool 'maven-3.5.2'}/bin/mvn' -B -DskipTests clean package"
+
+                    // Generate Javadoc
+                    sh "'${tool 'maven-3.5.2'}/bin/mvn' javadoc:javadoc"
+                }
+            }
+        }
+
+        stage('Publish Javadoc') {
+            steps {
+                // Publish Javadoc reports
+                publishHTML(
+                    target: [
+                        allowMissing: false,
+                        alwaysLinkToLastBuild: false,
+                        keepAll: true,
+                        reportDir: 'demo/target/site/apidocs',
+                        reportFiles: 'index.html',
+                        reportName: 'Javadoc Report',
+                        reportTitles: ''
+                    ]
+                )
+            }
         }
     }
-
-    stage('Publish Javadoc') {
-    dir('demo/target/site/apidocs') {
-        publishHTML([
-            allowMissing: false,
-            alwaysLinkToLastBuild: false,
-            keepAll: true,
-            reportDir: '',
-            reportFiles: 'index.html',
-            reportName: 'Javadoc Report',
-            reportTitles: ''
-        ])
-    }
-}
-
 }
