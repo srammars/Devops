@@ -1,0 +1,66 @@
+pipeline {
+    agent any
+
+    tools {
+        maven 'maven-3.5.2'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build and Run Tests') {
+            steps {
+                script {
+                    sh 'mvn clean test'
+                }
+            }
+        }
+
+        stage('Modify Test to Fail') {
+            steps {
+                script {
+                    // Modifier délibérément un test pour échouer
+                    // Assurez-vous d'ajuster le chemin du fichier en fonction de votre projet
+                    sh 'echo "Nouveau contenu du test" > src/test/java/chemin/vers/votre/TestClass.java'
+                }
+            }
+        }
+
+        stage('Build with Failing Test') {
+            steps {
+                script {
+                    sh 'mvn clean test'
+                }
+            }
+        }
+
+        stage('Ignore Test') {
+            steps {
+                script {
+                    // Ajouter l'annotation d'ignorance au test
+                    sh 'echo "@Ignore" >> src/test/java/chemin/vers/votre/TestClass.java'
+                }
+            }
+        }
+
+        stage('Build with Ignored Test') {
+            steps {
+                script {
+                    sh 'mvn clean test'
+                }
+            }
+        }
+
+        stage('Publish Test Reports') {
+            steps {
+                script {
+                    junit 'target/surefire-reports/*.xml'
+                }
+            }
+        }
+    }
+}
