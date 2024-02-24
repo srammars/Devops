@@ -1,54 +1,41 @@
 pipeline {
     agent any
 
-    environment {
-        MVN_HOME = tool 'maven-3.5.2'
+    tools {
+        maven 'maven-3.5.2'
     }
 
     stages {
         stage('Clone repo') {
             steps {
-                checkout scm
+                // Notez le changement de répertoire
+                dir('C:/Users/sramm/OneDrive/Documents/Devops/demo') {
+                    checkout scm
+                }
             }
         }
 
-        stage('Build project') {
+        stage('Build project and Run Tests') {
             steps {
-                dir('demo') {
+                // Notez le changement de répertoire
+                dir('C:/Users/sramm/OneDrive/Documents/Devops/demo') {
                     script {
-                        sh "${MVN_HOME}/bin/mvn -B -DskipTests clean package"
+                        sh "'${MVN_HOME}/bin/mvn' clean test"
                     }
                 }
             }
         }
 
-        stage('Generate Javadoc') {
+        stage('Publish Javadoc and Test Results') {
             steps {
-                dir('demo') {
+                // Notez le changement de répertoire
+                dir('C:/Users/sramm/OneDrive/Documents/Devops/demo') {
                     script {
-                        sh "${MVN_HOME}/bin/mvn javadoc:javadoc"
-                        sh 'ls -l target/site'
+                        sh "'${MVN_HOME}/bin/mvn' javadoc:javadoc"
+                        junit 'target/surefire-reports/*.xml'
                     }
                 }
             }
-        }
-
-        stage('Archive Javadoc') {
-            steps {
-                archiveArtifacts artifacts: 'demo/target/site/apidocs/**/*', allowEmptyArchive: true
-            }
-        }
-    }
-
-    post {
-        always {
-            echo 'This will always run'
-        }
-        success {
-            echo 'This will run only if the build is successful'
-        }
-        failure {
-            echo 'This will run only if the build fails'
         }
     }
 }
