@@ -6,59 +6,34 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
+        stage('Clone repo') {
             steps {
-                checkout scm
-            }
-        }
-
-        stage('Build and Run Tests') {
-            steps {
-                script {
-                    sh 'mvn clean test'
+                // Notez le changement de répertoire
+                dir('C:\\Users\\sramm\\OneDrive\\Documents\\Devops\\demo') {
+                    checkout scm
                 }
             }
         }
 
-        stage('Modify Test to Fail') {
+        stage('Build project and Run Tests') {
             steps {
-                script {
-                    // Modifier délibérément un test pour échouer
-                    // Assurez-vous d'ajuster le chemin du fichier en fonction de votre projet
-                    sh 'echo "Nouveau contenu du test" > src/test/java/chemin/vers/votre/TestClass.java'
+                // Notez le changement de répertoire
+                dir('C:\\Users\\sramm\\OneDrive\\Documents\\Devops\\demo') {
+                    script {
+                        sh "'${MVN_HOME}/bin/mvn' clean test"
+                    }
                 }
             }
         }
 
-        stage('Build with Failing Test') {
+        stage('Publish Javadoc and Test Results') {
             steps {
-                script {
-                    sh 'mvn clean test'
-                }
-            }
-        }
-
-        stage('Ignore Test') {
-            steps {
-                script {
-                    // Ajouter l'annotation d'ignorance au test
-                    sh 'echo "@Ignore" >> src/test/java/chemin/vers/votre/TestClass.java'
-                }
-            }
-        }
-
-        stage('Build with Ignored Test') {
-            steps {
-                script {
-                    sh 'mvn clean test'
-                }
-            }
-        }
-
-        stage('Publish Test Reports') {
-            steps {
-                script {
-                    junit 'target/surefire-reports/*.xml'
+                // Notez le changement de répertoire
+                dir('C:\\Users\\sramm\\OneDrive\\Documents\\Devops\\demo') {
+                    script {
+                        sh "'${MVN_HOME}/bin/mvn' javadoc:javadoc"
+                        junit 'target/surefire-reports/*.xml'
+                    }
                 }
             }
         }
