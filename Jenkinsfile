@@ -16,7 +16,7 @@ pipeline {
             steps {
                 dir('demo') {
                     script {
-                        sh "'${MVN_HOME}/bin/mvn' clean test"
+                        sh "${tool 'maven-3.5.2'}/bin/mvn clean test"
                     }
                 }
             }
@@ -26,7 +26,7 @@ pipeline {
             steps {
                 dir('demo') {
                     script {
-                        sh "'${MVN_HOME}/bin/mvn' javadoc:javadoc"
+                        sh "${tool 'maven-3.5.2'}/bin/mvn javadoc:javadoc"
                         junit 'target/surefire-reports/*.xml'
                     }
                 }
