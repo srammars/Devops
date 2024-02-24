@@ -11,7 +11,9 @@ node {
     }
 
     stage('Build project') {
-        dir('demo') { // Changez le répertoire courant en 'demo' où se trouve le pom.xml.
+        dir('demo') {
+            // Nettoyez l'espace de travail avant de construire pour éviter l'accumulation de fichiers.
+            cleanWs()
             sh "'${mvnHome}/bin/mvn' -B -DskipTests clean package"
         }
     }
@@ -25,13 +27,9 @@ node {
     }
 
     stage('Publish Javadoc') {
-        // Supposons que la Javadoc est générée dans 'demo/target/site/apidocs' après la construction du projet.
-        dir('demo/target/site/apidocs') {
-            // Ici vous pouvez définir comment vous voulez publier la Javadoc.
-            // Par exemple, vous pouvez utiliser `archiveArtifacts` pour archiver la Javadoc dans Jenkinss.
-            archiveArtifacts artifacts: '**/apidocs/**/*', allowEmptyArchive: true
+        dir('demo/target/site') {
+            // Assurez-vous que le chemin pour archiver la Javadoc est correct et optimisé.
+            archiveArtifacts artifacts: 'apidocs/**/*', allowEmptyArchive: true
         }
     }
-
-
 }
