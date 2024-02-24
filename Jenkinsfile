@@ -1,16 +1,21 @@
 pipeline {
     agent any
-    
+
     environment {
         MVN_HOME = tool 'maven-3.5.2'
     }
 
     stages {
-        stage('Clone and Build') {
+        stage('Clone repo') {
             steps {
-                script {
-                    git branch: 'devops', url: 'https://github.com/srammars/Devops.git'
-                    dir('demo') {
+                checkout scm
+            }
+        }
+
+        stage('Build project') {
+            steps {
+                dir('demo') {
+                    script {
                         sh "${MVN_HOME}/bin/mvn -B -DskipTests clean package"
                     }
                 }
@@ -19,30 +24,31 @@ pipeline {
 
         stage('Generate Javadoc') {
             steps {
-                script {
-                    dir('demo') {
+                dir('demo') {
+                    script {
                         sh "${MVN_HOME}/bin/mvn javadoc:javadoc"
+                        sh 'ls -l target/site'
                     }
                 }
             }
         }
 
-        stage('Publish Javadoc') {
+        stage('Archive Javadoc') {
             steps {
-                script {
-                    dir('demo/target/site') {
-                        publishHTML(target: [
-                            allowMissing: false,
-                            alwaysLinkToLastBuild: false,
-                            keepAll: true,
-                            reportDir: 'apidocs',
-                            reportFiles: 'index.html',
-                            reportName: 'Javadoc Report',
-                            reportTitles: ''
-                        ])
-                    }
-                }
+                archiveArtifacts artifacts: 'demo/target/site/apidocs/**/*', allowEmptyArchive: true
             }
+        }
+    }
+
+    post {
+        always {
+            echo 'This will always run'
+        }
+        success {
+            echo 'This will run only if the build is successful'
+        }
+        failure {
+            echo 'This will run only if the build fails'
         }
     }
 }
