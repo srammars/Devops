@@ -9,7 +9,7 @@ pipeline {
         stage('Print Maven Version') {
             steps {
                 script {
-                    sh '${MVN_HOME}/bin/mvn --version'
+                    bat "\"${MVN_HOME}\\bin\\mvn\" --version"
                 }
             }
         }
@@ -18,7 +18,7 @@ pipeline {
             steps {
                 script {
                     // Utilisez le chemin complet de l'exécutable Maven
-                    sh '${MVN_HOME}/bin/mvn clean test'
+                    bat "\"${MVN_HOME}\\bin\\mvn\" clean test"
                 }
             }
         }
@@ -27,7 +27,7 @@ pipeline {
             steps {
                 script {
                     // Modifier intentionnellement le test pour le faire échouer
-                    sh "sed -i 's/assertEquals(Integer.valueOf(5), Calculator.add(2, 3))/assertEquals(Integer.valueOf(6), Calculator.add(2, 3))/' src/test/java/CalculatorTest.java"
+                    bat "powershell -Command \"(Get-Content -Path .\\src\\test\\java\\com\\example\\demo\\DummyTest.java) -replace 'expectedValue', 'newValue' | Set-Content -Path .\\src\\test\\java\\com\\example\\demo\\DummyTest.java\""
                 }
             }
         }
@@ -36,28 +36,12 @@ pipeline {
             steps {
                 script {
                     // Vérifier que la compilation fonctionne et que le test échoue
-                    sh '${MVN_HOME}/bin/mvn clean test'
+                    bat "\"${MVN_HOME}\\bin\\mvn\" clean test"
                 }
             }
         }
 
-        stage('Ignore Test') {
-            steps {
-                script {
-                    // Ignorer le test temporairement
-                    sh "sed -i '/@Test/,/@Ignore/ s/^/\\/\\/ /' src/test/java/CalculatorTest.java"
-                }
-            }
-        }
-
-        stage('Verify Ignored Test') {
-            steps {
-                script {
-                    // Vérifier que la compilation fonctionne avec le test ignoré
-                    sh '${MVN_HOME}/bin/mvn clean test'
-                }
-            }
-        }
+        // Ajoutez d'autres étapes selon votre besoin
 
         stage('Publish Test Reports') {
             steps {
