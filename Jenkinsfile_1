@@ -26,6 +26,7 @@ pipeline {
                 script {
                     // Modify your test to intentionally fail
                     // For example, update the expected result in one of your test methods
+                    // In your case, you might modify the DummyTest.java
                 }
             }
         }
@@ -43,7 +44,7 @@ pipeline {
             steps {
                 script {
                     // Ignore the failing test via Maven
-                    sh "${MVN_HOME}/bin/mvn clean test -Dtest=!YourFailingTestClassName"
+                    sh "${MVN_HOME}/bin/mvn clean test -Dtest=!DummyTest"
                 }
             }
         }
