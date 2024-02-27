@@ -14,8 +14,10 @@ pipeline {
 
         stage('Build and Test') {
             steps {
-                script {
-                    sh "${MVN_HOME}/bin/mvn clean test"
+                dir('demo') {
+                    script {
+                        sh "${MVN_HOME}/bin/mvn clean test"
+                    }
                 }
             }
         }
@@ -23,34 +25,37 @@ pipeline {
         stage('Modify Test to Fail') {
             steps {
                 script {
-                    // Modify the test to intentionally fail
-                    sh "sed -i 's/assertEquals(4, add(2, 2));/assertEquals(5, add(2, 2));/' src/test/java/DummyTest.java"
+                    // Modify a test to fail
+                    sh 'echo "assertEquals(4, add(2, 2)); // Intentional failure" > demo/src/test/java/DummyTest.java'
                 }
             }
         }
 
         stage('Build with Failing Test') {
             steps {
-                script {
-                    // Build the project with the intentionally failing test
-                    sh "${MVN_HOME}/bin/mvn clean test"
+                dir('demo') {
+                    script {
+                        sh "${MVN_HOME}/bin/mvn clean test"
+                    }
                 }
             }
         }
 
         stage('Ignore Test') {
             steps {
-                script {
-                    // Ignore the failing test
-                    sh "echo '<properties><skipTests>true</skipTests></properties>' > pom.xml"
-                    sh "${MVN_HOME}/bin/mvn clean test"
+                dir('demo') {
+                    script {
+                        // Ignore the failing test
+                        sh 'echo "<properties><maven.test.skip>true</maven.test.skip></properties>" > pom.xml'
+                        sh "${MVN_HOME}/bin/mvn clean test"
+                    }
                 }
             }
         }
 
         stage('Publish Test Report') {
             steps {
-                junit 'target/surefire-reports/*.xml'
+                junit 'demo/target/surefire-reports/**/*.xml'
             }
         }
     }
