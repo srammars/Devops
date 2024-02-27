@@ -18,3 +18,8 @@ public class Calculator {
     }
 }
 
+public class DummyTest {
+    public static void main(String[] args) {
+        System.out.println("Hello, World!");
+    }
+}

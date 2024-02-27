@@ -2,6 +2,11 @@ package com.example.demo;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+public class DummyTest {
+    public static void main(String[] args) {
+        System.out.println("Hello, World!");
+    }
+}
 
 public class CalculatorTest {
 
