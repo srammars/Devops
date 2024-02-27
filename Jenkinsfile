@@ -1,62 +1,49 @@
 pipeline {
     agent any
-
-    environment {
-        MVN_HOME = tool 'maven-3.5.2' // Assurez-vous que le nom ici correspond à celui configuré dans Jenkins
+    
+        triggers {
+        pollSCM('*/3 * * * *') 
     }
+
+    tools {
+      
+        maven 'maven-3.5.2'
+    }
+    
     stages {
         stage('Clone repo') {
             steps {
-                checkout scm
-            }
-        }
-        stage('Build and Test') {
-            steps {
-                dir('./demo') {
-                    script {
-                        sh "${MVN_HOME}/bin/mvn clean test"
-                    }
-                }
+                
+                git branch: 'devops', url: 'https://github.com/srammars/Devops.git'
             }
         }
 
         stage('Build project') {
             steps {
-                dir('./demo') {
-                    script {
-                        sh "${MVN_HOME}/bin/mvn -B -DskipTests clean package"
-                    }
+                dir('demo') { 
+                   
+                    sh "'${tool 'maven-3.5.2'}/bin/mvn' -B -DskipTests clean package"
+                    
+                    // Génère le Javadoc
+                    sh "'${tool 'maven-3.5.2'}/bin/mvn' javadoc:javadoc"
                 }
             }
         }
 
-        stage('Generate Javadoc') {
+        stage('Publish Javadoc') {
             steps {
-                dir('./demo') {
-                    script {
-                        sh "${MVN_HOME}/bin/mvn javadoc:javadoc"
-                        sh 'ls -l target/site'
-                    }
+               
+                dir('demo/target/site/apidocs') {
+                   
+                    publishHTML(target: [
+                        reportDir: '.', 
+                        reportFiles: 'index.html', 
+                        reportName: "Javadoc", 
+                        keepAll: true, 
+                        allowMissing: false 
+                    ])
                 }
             }
-        }
-
-        stage('Archive Javadoc') {
-            steps {
-                archiveArtifacts artifacts: 'demo/target/site/apidocs/**/*', allowEmptyArchive: true
-            }
-        }
-    }
-
-    post {
-        always {
-            echo 'This will always run'
-        }
-        success {
-            echo 'This will run only if the build is successful'
-        }
-        failure {
-            echo 'This will run only if the build fails'
         }
     }
 }
