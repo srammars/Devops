@@ -1,69 +1,59 @@
 pipeline {
     agent any
-
+    
     tools {
-        // Remplacez 'Maven' par la version spécifique de Maven configurée dans Jenkins
+        // Spécifiez ici la version de Maven à utiliser
         maven 'maven-3.5.2'
     }
-
+    
     stages {
-        stage('Checkout') {
+        stage('Build and Test') {
             steps {
-                checkout scm
+                script {
+                    // Étape 1: Vérifier que la compilation et les tests sont passants
+                    sh 'mvn clean compile test'
+                }
             }
         }
 
-        stage('Build') {
+        stage('Modify Test to Fail') {
             steps {
                 script {
-                    dir('.') {
-                        // Utilisez le chemin correct vers votre projet
-                        sh './mvnw clean compile'
-                        // Pour les systèmes Windows, utilisez 'mvnw.cmd' au lieu de './mvnw'
+                    // Étape 2: Modifier un test de manière à la faire échouer
+                    sh 'sed -i "s/assertEquals(5, calculatrice.add(2, 3));/assertEquals(6, calculatrice.add(2, 3));/" src/test/java/CalculatriceTest.java'
+                    sh 'mvn test'
+                }
+            }
+        }
+
+        stage('Check Compilation and Test Status') {
+            steps {
+                script {
+                    // Étape 3: Vérifier que la compilation fonctionne et que le test remonte en KO
+                    catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+                        sh 'mvn test'
                     }
                 }
             }
         }
 
-
-        stage('Tests') {
+        stage('Ignore Test') {
             steps {
                 script {
-                    // Assurez-vous que les tests produisent des rapports JUnit au bon emplacement
+                    // Étape 4: Ignorer le test via Maven de façon à obtenir un build correct
+                    sh 'echo "@Disabled" >> src/test/java/CalculatriceTest.java'
                     sh 'mvn test'
                 }
             }
         }
 
-        stage('Test de non-régression') {
+        stage('Publish Test Reports') {
             steps {
                 script {
-                    // Modifier un test pour le faire échouer
-                    // ...
-
-                    // Vérifier que la compilation fonctionne
-                    sh 'mvn compile'
-
-                    // Vérifier que le test échoue et remonte en KO
-                    sh 'mvn test'
+                    // Étape 5: Publier le rapport de tests
+                    junit 'target/surefire-reports/*.xml'
                 }
             }
-        }
-
-        stage('Ignorer le test') {
-            steps {
-                script {
-                    // Ignorer le test via Maven
-                    sh 'mvn test -Dtest=CalculatriceTest#testDiv'
-                }
-            }
-        }
-    }
-
-    post {
-        always {
-            // Publier le rapport de tests JUnit
-            junit 'target/surefire-reports/*.xml'
         }
     }
 }

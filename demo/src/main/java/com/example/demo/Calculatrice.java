@@ -1,6 +1,6 @@
-package com.example.demo;
-
+// Calculatrice.java
 public class Calculatrice {
+
     public Integer add(Integer a, Integer b) {
         return a + b;
     }
@@ -11,7 +11,7 @@ public class Calculatrice {
 
     public Integer div(Integer a, Integer b) {
         if (b == 0) {
-            throw new IllegalArgumentException("Division par zéro !");
+            throw new IllegalArgumentException("Division par zéro");
         }
         return a / b;
     }
