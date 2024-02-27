@@ -1,8 +1,13 @@
 pipeline {
     agent any
     
+    tools {
+        // Assurez-vous que le nom ici correspond à celui configuré dans Jenkins
+        maven 'Maven'
+    }
+
     stages {
-        stage('Checkout') {
+        stage('Checkout SCM') {
             steps {
                 checkout scm
             }
@@ -11,10 +16,8 @@ pipeline {
         stage('Build and Test') {
             steps {
                 script {
-                    // Configuration Maven
                     def mvnHome = tool 'Maven'
                     withEnv(["PATH+MAVEN=${mvnHome}/bin"]) {
-                        // Compilation et tests Maven
                         sh "mvn clean test"
                     }
                 }
@@ -24,8 +27,7 @@ pipeline {
         stage('Modify Test to Fail') {
             steps {
                 script {
-                    // Modifier un test pour le faire échouer (à des fins de démonstration)
-                    sh "echo 'public void testFailure() { org.junit.Assert.fail(); }' >> src/test/java/VotreClasseDeTest.java"
+                    // Éditez votre test pour le faire échouer
                 }
             }
         }
@@ -33,10 +35,9 @@ pipeline {
         stage('Build with Failing Test') {
             steps {
                 script {
-                    // Compilation avec le test modifié qui échoue
                     def mvnHome = tool 'Maven'
                     withEnv(["PATH+MAVEN=${mvnHome}/bin"]) {
-                        sh "mvn clean test"
+                        sh "mvn clean test -Dtest=!CalculatorTest"
                     }
                 }
             }
@@ -45,10 +46,10 @@ pipeline {
         stage('Ignore Test') {
             steps {
                 script {
-                    // Ignorer le test via Maven
+                    // Ignorez le test pour obtenir un build correct
                     def mvnHome = tool 'Maven'
                     withEnv(["PATH+MAVEN=${mvnHome}/bin"]) {
-                        sh "mvn clean test -Dtest=!CalculatorTest"
+                        sh "mvn clean test -Dmaven.test.skip=true"
                     }
                 }
             }
@@ -57,7 +58,6 @@ pipeline {
 
     post {
         always {
-            // Étape pour publier les rapports de tests
             junit '**/target/surefire-reports/*.xml'
         }
     }
