@@ -1,42 +1,64 @@
 pipeline {
     agent any
-
-    tools {
-        // Utilisez le nom correct de l'installation Maven dans Jenkins
-        maven 'maven-3.5.2'
-    }
-
+    
     stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
         stage('Build and Test') {
             steps {
                 script {
-                    // Étape 1: Vérifier que la compilation et les tests sont passants
-                    sh "mvn clean test"
+                    // Configuration Maven
+                    def mvnHome = tool 'Maven'
+                    withEnv(["PATH+MAVEN=${mvnHome}/bin"]) {
+                        // Compilation et tests Maven
+                        sh "mvn clean test"
+                    }
+                }
+            }
+        }
 
-                    // Étape 2: Modifier un test pour le faire échouer
-                    // Ajoutez votre modification intentionnelle dans le code du test ici
+        stage('Modify Test to Fail') {
+            steps {
+                script {
+                    // Modifier un test pour le faire échouer (à des fins de démonstration)
+                    sh "echo 'public void testFailure() { org.junit.Assert.fail(); }' >> src/test/java/VotreClasseDeTest.java"
+                }
+            }
+        }
 
-                    // Étape 3: Vérifier que la compilation fonctionne et que le test remonte en KO
-                    // Vous pouvez également exécuter seulement les tests sans compilation ici
-                    sh "mvn test"
+        stage('Build with Failing Test') {
+            steps {
+                script {
+                    // Compilation avec le test modifié qui échoue
+                    def mvnHome = tool 'Maven'
+                    withEnv(["PATH+MAVEN=${mvnHome}/bin"]) {
+                        sh "mvn clean test"
+                    }
+                }
+            }
+        }
 
-                    // Étape 4: Ignorer le test via Maven
-                    // Vous pouvez utiliser l'option -DskipTests pour ignorer les tests
-                    sh "mvn clean install -DskipTests"
-
-                    // Étape 5: Publier le rapport de tests
-                    junit '**/target/surefire-reports/*.xml'
+        stage('Ignore Test') {
+            steps {
+                script {
+                    // Ignorer le test via Maven
+                    def mvnHome = tool 'Maven'
+                    withEnv(["PATH+MAVEN=${mvnHome}/bin"]) {
+                        sh "mvn clean test -Dtest=!VotreClasseDeTest"
+                    }
                 }
             }
         }
     }
 
     post {
-        success {
-            echo 'Build et tests réussis !'
-        }
-        failure {
-            echo 'Build ou tests échoués.'
+        always {
+            // Étape pour publier les rapports de tests
+            junit '**/target/surefire-reports/*.xml'
         }
     }
 }
