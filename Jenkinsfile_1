@@ -15,15 +15,17 @@ pipeline {
 
         stage('Build and Test') {
             steps {
-                // Utilisation de Maven pour compiler et exécuter les tests
-                script {
-                    def mvnHome = tool 'maven-3.5.2'
-                    withEnv(["PATH+MAVEN=${mvnHome}/bin"]) {
-                        sh "mvn clean test"
+                dir('chemin/vers/le/repertoire/du/projet') {
+                    script {
+                        def mvnHome = tool 'maven-3.5.2'
+                        withEnv(["PATH+MAVEN=${mvnHome}/bin"]) {
+                            sh "mvn clean test"
+                        }
                     }
                 }
             }
         }
+
 
         stage('Modify Test to Fail') {
             steps {
