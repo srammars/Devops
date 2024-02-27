@@ -1,19 +1,31 @@
 pipeline {
     agent any
 
+    tools {
+        // Définir l'installation Maven
+        maven 'Maven'
+    }
+
     stages {
         stage('Build and Test') {
             steps {
                 script {
-                    // Configuration Maven
-                    def mvnHome = tool 'Maven'
-                    def junitPath = findFiles(glob: '**/target/surefire-reports/TEST-*.xml')[0].path
+                    // Étape 1: Vérifier que la compilation et les tests sont passants
+                    sh "mvn clean test"
 
-                    // Exécution des tests
-                    sh "${mvnHome}/bin/mvn clean test"
+                    // Étape 2: Modifier un test pour le faire échouer
+                    // Ajoutez votre modification intentionnelle dans le code du test ici
 
-                    // Archiver les résultats des tests
-                    junit junitPath
+                    // Étape 3: Vérifier que la compilation fonctionne et que le test remonte en KO
+                    // Vous pouvez également exécuter seulement les tests sans compilation ici
+                    sh "mvn test"
+
+                    // Étape 4: Ignorer le test via Maven
+                    // Vous pouvez utiliser l'option -DskipTests pour ignorer les tests
+                    sh "mvn clean install -DskipTests"
+
+                    // Étape 5: Publier le rapport de tests
+                    junit '**/target/surefire-reports/*.xml'
                 }
             }
         }
