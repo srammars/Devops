@@ -1,0 +1,30 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build and Test') {
+            steps {
+                script {
+                    // Configuration Maven
+                    def mvnHome = tool 'Maven'
+                    def junitPath = findFiles(glob: '**/target/surefire-reports/TEST-*.xml')[0].path
+
+                    // Exécution des tests
+                    sh "${mvnHome}/bin/mvn clean test"
+
+                    // Archiver les résultats des tests
+                    junit junitPath
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Build et tests réussis !'
+        }
+        failure {
+            echo 'Build ou tests échoués.'
+        }
+    }
+}
