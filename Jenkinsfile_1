@@ -48,7 +48,7 @@ pipeline {
                     // Ignorer le test via Maven
                     def mvnHome = tool 'Maven'
                     withEnv(["PATH+MAVEN=${mvnHome}/bin"]) {
-                        sh "mvn clean test -Dtest=!VotreClasseDeTest"
+                        sh "mvn clean test -Dtest=!CalculatorTest"
                     }
                 }
             }
