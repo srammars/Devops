@@ -28,6 +28,7 @@ pipeline {
             steps {
                 script {
                     // Éditez votre test pour le faire échouer
+                    // Ajoutez une assertion qui échouera délibérément
                 }
             }
         }
