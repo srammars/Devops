@@ -26,9 +26,11 @@ pipeline {
         stage('Modify Test to Fail') {
             steps {
                 script {
-                    // Éditez votre test pour le faire échouer
+                    // Modifiez le fichier CalculatorTest.java pour faire échouer le test
+                    def calculatorTestPath = "src/test/java/com/example/demo/CalculatorTest.java"
+
                     // Ajoutez une assertion qui échouera délibérément
-                    // Exemple : assertEquals(10, Calculator.add(2, 3));
+                    sh "echo \"import static org.junit.Assert.fail;\\n\\npublic class CalculatorTest {\\n\\n@Test\\npublic void testFailing() {\\n    fail(\\\"This test intentionally fails.\\\")\\n}\\n}\" > $calculatorTestPath"
                 }
             }
         }
