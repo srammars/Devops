@@ -62,7 +62,7 @@ pipeline {
             // Clean up and restore original state
             script {
                 sh 'mvn clean'
-                sh 'git checkout -- src/test/java/CalculatorTest pom.xml'
+                sh 'git checkout -- src/test/java/CalculatorTest.java pom.xml'
             }
         }
     }
