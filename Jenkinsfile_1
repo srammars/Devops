@@ -5,7 +5,16 @@ pipeline {
        maven 'maven-3.5.2'  // or another installed version
     }   
 
+    
     stages {
+
+        stage('Clone repo') {
+            steps {
+                
+                git branch: 'devops', url: 'https://github.com/srammars/Devops.git'
+            }
+        }
+        
         stage('Build project') {
             steps {
                 // Naviguer vers le répertoire du projet
