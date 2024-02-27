@@ -1,18 +1,14 @@
 pipeline {
     agent any
 
-    options {
-        // Les options globales du pipeline peuvent être définies ici
-    }
-
-    environment {
-        // Les variables d'environnement globales peuvent être définies ici
-        maven 'maven-3.5.2'
-    }
+    // Commentez la section environment si vous n'avez pas besoin de variables d'environnement globales
+    // environment {
+    //     // Les variables d'environnement globales peuvent être définies ici
+    // }
 
     tools {
-        // Configurez l'outil Maven ici
-        maven 'Maven'
+        // Remplacez 'Maven' par la version spécifique de Maven configurée dans Jenkins
+        maven 'maven-3.5.2'
     }
 
     stages {
@@ -26,14 +22,18 @@ pipeline {
         stage('Build') {
             steps {
                 // Étape de compilation
-                sh 'mvn clean compile'
+                script {
+                    sh 'mvn clean compile'
+                }
             }
         }
 
         stage('Tests') {
             steps {
                 // Étape d'exécution des tests
-                sh 'mvn test'
+                script {
+                    sh 'mvn test'
+                }
             }
         }
 
@@ -43,17 +43,23 @@ pipeline {
                 // ...
 
                 // Vérifier que la compilation fonctionne
-                sh 'mvn compile'
+                script {
+                    sh 'mvn compile'
+                }
 
                 // Vérifier que le test échoue et remonte en KO
-                sh 'mvn test'
+                script {
+                    sh 'mvn test'
+                }
             }
         }
 
         stage('Ignorer le test') {
             steps {
                 // Ignorer le test via Maven
-                sh 'mvn test -Dtest=CalculatriceTest#testDiv'
+                script {
+                    sh 'mvn test -Dtest=CalculatriceTest#testDiv'
+                }
             }
         }
     }
