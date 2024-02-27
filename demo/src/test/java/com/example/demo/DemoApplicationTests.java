@@ -1,13 +1,11 @@
 package com.example.demo;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class DemoApplicationTests {
 
-   
-    static class DummyTest  {
+    static class Calculatrice {
 
         public int add(int a, int b) {
             return a + b;
@@ -24,20 +22,19 @@ public class DemoApplicationTests {
 
     @Test
     public void testAddition() {
-        DummyTest  DummyTest  = new DummyTest ();
-        assertThat(DummyTest .add(2, 3)).isEqualTo(5);
-    }
-    
-    @Test
-    public void testSubtraction() {
-        DummyTest  DummyTest  = new DummyTest ();
-        assertThat(DummyTest .subtract(5, 3)).isEqualTo(2);
+        Calculatrice calculatrice = new Calculatrice();
+        assertThat(calculatrice.add(2, 3)).isEqualTo(5);
     }
 
-    
+    @Test
+    public void testSubtraction() {
+        Calculatrice calculatrice = new Calculatrice();
+        assertThat(calculatrice.subtract(5, 3)).isEqualTo(2);
+    }
+
     @Test
     public void testMultiplication() {
-        DummyTest  DummyTest  = new DummyTest ();
-        assertThat(DummyTest .multiply(2, 3)).isEqualTo(6);
+        Calculatrice calculatrice = new Calculatrice();
+        assertThat(calculatrice.multiply(2, 3)).isEqualTo(6);
     }
 }
