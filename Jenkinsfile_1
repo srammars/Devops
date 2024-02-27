@@ -3,7 +3,6 @@ pipeline {
 
     environment {
         MVN_HOME = tool 'maven-3.5.2'
-        SONARQUBE_HOME = tool 'sonarqube-3.2.0'
     }
 
     stages {
@@ -24,9 +23,8 @@ pipeline {
         stage('Modify Test to Fail') {
             steps {
                 script {
-                    // Modify your test to intentionally fail
-                    // For example, update the expected result in one of your test methods
-                    // In your case, you might modify the DummyTest.java
+                    // Modify the test to intentionally fail
+                    sh "sed -i 's/assertEquals(4, add(2, 2));/assertEquals(5, add(2, 2));/' src/test/java/DummyTest.java"
                 }
             }
         }
@@ -34,7 +32,7 @@ pipeline {
         stage('Build with Failing Test') {
             steps {
                 script {
-                    // Ensure that the compilation still occurs even with a failing test
+                    // Build the project with the intentionally failing test
                     sh "${MVN_HOME}/bin/mvn clean test"
                 }
             }
@@ -43,28 +41,16 @@ pipeline {
         stage('Ignore Test') {
             steps {
                 script {
-                    // Ignore the failing test via Maven
-                    sh "${MVN_HOME}/bin/mvn clean test -Dtest=!DummyTest"
+                    // Ignore the failing test
+                    sh "echo '<properties><skipTests>true</skipTests></properties>' > pom.xml"
+                    sh "${MVN_HOME}/bin/mvn clean test"
                 }
             }
         }
 
         stage('Publish Test Report') {
             steps {
-                script {
-                    // Publish the test report
-                    junit '**/target/surefire-reports/*.xml'
-                }
-            }
-        }
-
-        stage('Run SonarQube Analysis') {
-            steps {
-                script {
-                    withSonarQubeEnv('SonarQube Server') {
-                        sh "${MVN_HOME}/bin/mvn sonar:sonar"
-                    }
-                }
+                junit 'target/surefire-reports/*.xml'
             }
         }
     }
