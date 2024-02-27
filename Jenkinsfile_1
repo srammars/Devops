@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     tools {
-        // Assurez-vous que le nom ici correspond à celui configuré dans Jenkins
         maven 'maven-3.5.2'
     }
 
@@ -16,7 +15,7 @@ pipeline {
         stage('Build and Test') {
             steps {
                 script {
-                    def mvnHome = tool 'Maven'
+                    def mvnHome = tool 'maven-3.5.2'
                     withEnv(["PATH+MAVEN=${mvnHome}/bin"]) {
                         sh "mvn clean test"
                     }
@@ -25,22 +24,19 @@ pipeline {
         }
 
         stage('Modify Test to Fail') {
-        steps {
-            script {
-                // Modifiez le fichier CalculatorTest.java pour faire échouer le test
-                def calculatorTestPath = "src/test/java/com/example/demo/CalculatorTest.java"
-
-                // Ajoutez une assertion qui échouera délibérément
-                sh "echo \"import static org.junit.Assert.fail;\\n\\npublic class CalculatorTest {\\n\\n@Test\\npublic void testFailing() {\\n    fail(\\\"This test intentionally fails.\\\")\\n}\\n}\" > $calculatorTestPath"
+            steps {
+                script {
+                    // Éditez votre test pour le faire échouer
+                    // Ajoutez une assertion qui échouera délibérément
+                    // Exemple : assertEquals(10, Calculator.add(2, 3));
+                }
             }
         }
-}
-
 
         stage('Build with Failing Test') {
             steps {
                 script {
-                    def mvnHome = tool 'Maven'
+                    def mvnHome = tool 'maven-3.5.2'
                     withEnv(["PATH+MAVEN=${mvnHome}/bin"]) {
                         sh "mvn clean test -Dtest=!CalculatorTest"
                     }
@@ -52,7 +48,7 @@ pipeline {
             steps {
                 script {
                     // Ignorez le test pour obtenir un build correct
-                    def mvnHome = tool 'Maven'
+                    def mvnHome = tool 'maven-3.5.2'
                     withEnv(["PATH+MAVEN=${mvnHome}/bin"]) {
                         sh "mvn clean test -Dmaven.test.skip=true"
                     }
