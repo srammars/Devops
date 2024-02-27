@@ -16,10 +16,13 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    sh 'mvn clean compile'
+                    dir('.') {
+                        sh 'mvn clean compile'
+                    }
                 }
             }
         }
+
 
         stage('Tests') {
             steps {
