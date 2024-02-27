@@ -1,41 +1,23 @@
-package com.example.demo;
+package com.example;
 
-import org.junit.jupiter.api.Test;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
-public class DemoApplicationTests {
+public class CalculatorTest {
 
-    // Classe Calculatrice définie directement dans le fichier de test
-    static class Calculatrice {
-
-        public int add(int a, int b) {
-            return a + b;
-        }
-
-        public int subtract(int a, int b) {
-            return a - b;
-        }
-
-        public int multiply(int a, int b) {
-            return a * b;
-        }
+    @Test
+    public void testAdd() {
+        // Modifiez la valeur attendue pour provoquer un échec du test
+        assertEquals(6, Calculator.add(2, 3));
     }
 
     @Test
-    public void testAddition() {
-        Calculatrice calculatrice = new Calculatrice();
-        assertThat(calculatrice.add(2, 3)).isEqualTo(6);
+    public void testMultiply() {
+        assertEquals(6, Calculator.multiply(2, 3));
     }
 
     @Test
-    public void testSubtraction() {
-        Calculatrice calculatrice = new Calculatrice();
-        assertThat(calculatrice.subtract(5, 3)).isEqualTo(2);
-    }
-
-    @Test
-    public void testMultiplication() {
-        Calculatrice calculatrice = new Calculatrice();
-        assertThat(calculatrice.multiply(2, 3)).isEqualTo(6);
+    public void testDivide() {
+        assertEquals(2, Calculator.divide(6, 3));
     }
 }
