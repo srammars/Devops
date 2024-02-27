@@ -6,68 +6,89 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
+        stage('Clone repo') {
             steps {
-                script {
-                    // Checkout your Git repository
-                    checkout scm
-                }
+                checkout scm
             }
         }
 
         stage('Build and Test') {
             steps {
-                script {
-                    // Build and run tests with Maven
-                    sh 'mvn clean test'
+                dir('demo') {
+                    script {
+                        sh "${MVN_HOME}/bin/mvn clean test"
+                    }
                 }
             }
         }
 
         stage('Modify Test to Fail') {
             steps {
-                script {
-                    // Simulate a failing test
-                    sh 'echo "public class CalculatorTest { @Test public void failingTest() { assert false } }" > src/test/java/CalculatorTest.java'
+                dir('demo') {
+                    script {
+                        // Modifier un test pour le faire échouer
+                        // Vous pouvez ajouter ici le code pour modifier le test
+                    }
                 }
             }
         }
 
         stage('Build with Failing Test') {
             steps {
-                script {
-                    // Build and run tests with Maven (expecting a failure)
-                    sh 'mvn clean test'
+                dir('demo') {
+                    script {
+                        // Assurez-vous que la compilation fonctionne malgré l'échec du test
+                        sh "${MVN_HOME}/bin/mvn clean package"
+                    }
                 }
             }
         }
 
         stage('Ignore Test') {
             steps {
-                script {
-                    // Ignore the failing test via Maven Surefire Plugin configuration
-                    sh 'echo "<properties><maven.test.skip>true</maven.test.skip></properties>" > pom.xml'
+                dir('demo') {
+                    script {
+                        // Ignorer le test pour obtenir un build correct
+                        sh "${MVN_HOME}/bin/mvn clean package -DskipTests"
+                    }
                 }
             }
         }
 
         stage('Publish Test Report') {
             steps {
-                script {
-                    // Assuming your test reports are generated in the target/surefire-reports directory
-                    junit 'target/surefire-reports/**/*.xml'
+                // Ajouter ici les étapes pour publier le rapport de tests
+                junit 'target/surefire-reports/*.xml'
+            }
+        }
+
+        stage('Generate Javadoc') {
+            steps {
+                dir('demo') {
+                    script {
+                        sh "${MVN_HOME}/bin/mvn javadoc:javadoc"
+                        sh 'ls -l target/site'
+                    }
                 }
+            }
+        }
+
+        stage('Archive Javadoc') {
+            steps {
+                archiveArtifacts artifacts: 'demo/target/site/apidocs/**/*', allowEmptyArchive: true
             }
         }
     }
 
     post {
         always {
-            // Clean up and restore original state
-            script {
-                sh 'mvn clean'
-                sh 'git checkout -- src/test/java/CalculatorTest.java pom.xml'
-            }
+            echo 'This will always run'
+        }
+        success {
+            echo 'This will run only if the build is successful'
+        }
+        failure {
+            echo 'This will run only if the build fails'
         }
     }
 }
