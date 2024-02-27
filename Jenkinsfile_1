@@ -1,7 +1,6 @@
 pipeline {
     agent any
 
-    // Définition des outils, ici Maven 3.5.2
     tools {
         maven 'maven-3.5.2'
     }
@@ -13,21 +12,18 @@ pipeline {
             }
         }
 
-       stage('Build and Test') {
-        steps {
-            script {
+        stage('Build and Test') {
+            steps {
                 dir('C:/Users/sramm/OneDrive/Documents/Devops/demo/') {
-                    // Assurez-vous que le chemin est correct et que Jenkins a les droits nécessaires
-                    // pour accéder à ce répertoire
-                    def mvnHome = tool 'maven-3.5.2'
-                    withEnv(["PATH+MAVEN=${mvnHome}/bin"]) {
-                        sh "mvn clean test"
+                    script {
+                        def mvnHome = tool 'maven-3.5.2'
+                        withEnv(["PATH+MAVEN=${mvnHome}/bin"]) {
+                            sh "mvn clean test"
+                        }
                     }
                 }
             }
         }
-    }
-
 
         stage('Modify Test to Fail') {
             steps {
@@ -41,11 +37,9 @@ pipeline {
 
         stage('Build with Failing Test') {
             steps {
-                // Utilisation de Maven pour compiler avec le test modifié
                 script {
                     def mvnHome = tool 'maven-3.5.2'
                     withEnv(["PATH+MAVEN=${mvnHome}/bin"]) {
-                        // Exécution des tests, mais en excluant CalculatorTest
                         sh "mvn clean test -Dtest=!CalculatorTest"
                     }
                 }
@@ -54,11 +48,9 @@ pipeline {
 
         stage('Ignore Test') {
             steps {
-                // Ignorer le test modifié pour obtenir un build correct
                 script {
                     def mvnHome = tool 'maven-3.5.2'
                     withEnv(["PATH+MAVEN=${mvnHome}/bin"]) {
-                        // Ignorer les tests pour cette étape
                         sh "mvn clean test -Dmaven.test.skip=true"
                     }
                 }
@@ -68,7 +60,6 @@ pipeline {
 
     post {
         always {
-            // Publier les résultats des tests avec le plugin JUnit
             junit '**/target/surefire-reports/*.xml'
         }
     }
