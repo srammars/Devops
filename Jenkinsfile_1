@@ -17,7 +17,9 @@ pipeline {
             steps {
                 script {
                     dir('.') {
-                        sh 'mvn clean compile'
+                        // Utilisez le chemin correct vers votre projet
+                        sh './mvnw clean compile'
+                        // Pour les systèmes Windows, utilisez 'mvnw.cmd' au lieu de './mvnw'
                     }
                 }
             }
