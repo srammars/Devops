@@ -15,7 +15,7 @@ pipeline {
 
         stage('Build and Test') {
             steps {
-                dir('C:/Users/sramm/OneDrive/Documents/Devops/demo/') {
+                dir('C:/Users/sramm/OneDrive/Documents/Devops/') {
                     script {
                         def mvnHome = tool 'maven-3.5.2'
                         withEnv(["PATH+MAVEN=${mvnHome}/bin"]) {
