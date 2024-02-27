@@ -3,15 +3,14 @@ pipeline {
 
     environment {
         MVN_HOME = tool 'maven-3.5.2'
+        PROJECT_PATH = "${WORKSPACE}/demo"
     }
 
     stages {
         stage('Build and Test') {
             steps {
                 script {
-                    // Utilisation de la variable d'environnement WORKSPACE pour obtenir le chemin complet du répertoire de travail
-                    def projectPath = "${WORKSPACE}/demo"
-                    sh "${MVN_HOME}/bin/mvn -f ${projectPath}/pom.xml clean test"
+                    sh "${MVN_HOME}/bin/mvn -f ${PROJECT_PATH}/pom.xml clean test"
                 }
             }
         }
@@ -19,9 +18,8 @@ pipeline {
         stage('Modify and Fail Test') {
             steps {
                 script {
-                    def projectPath = "${WORKSPACE}/demo"
                     // Modifier intentionnellement le test pour le faire échouer
-                    sh "sed -i 's/assertEquals(3, Calculator.add(1, 2))/assertEquals(4, Calculator.add(1, 2))/' ${projectPath}/src/test/java/com/example/demo/CalculatorTest.java"
+                    sh "sed -i 's/assertEquals(4, add(2, 2))/assertEquals(5, add(2, 2))/' ${PROJECT_PATH}/src/test/java/com/example/demo/DummyTest.java"
                 }
             }
         }
@@ -29,9 +27,8 @@ pipeline {
         stage('Verify Compilation and Failing Test') {
             steps {
                 script {
-                    def projectPath = "${WORKSPACE}/demo"
                     // Vérifier que la compilation fonctionne et que le test échoue
-                    sh "${MVN_HOME}/bin/mvn -f ${projectPath}/pom.xml clean test"
+                    sh "${MVN_HOME}/bin/mvn -f ${PROJECT_PATH}/pom.xml clean test"
                 }
             }
         }
@@ -39,9 +36,8 @@ pipeline {
         stage('Ignore Test') {
             steps {
                 script {
-                    def projectPath = "${WORKSPACE}/demo"
                     // Ignorer le test temporairement
-                    sh "sed -i '/@Test/,/@Ignore/ s/^/\\/\\/ /' ${projectPath}/src/test/java/com/example/demo/CalculatorTest.java"
+                    sh "sed -i '/@Test/,/@Ignore/ s/^/\\/\\/ /' ${PROJECT_PATH}/src/test/java/com/example/demo/DummyTest.java"
                 }
             }
         }
@@ -49,9 +45,8 @@ pipeline {
         stage('Verify Ignored Test') {
             steps {
                 script {
-                    def projectPath = "${WORKSPACE}/demo"
                     // Vérifier que la compilation fonctionne avec le test ignoré
-                    sh "${MVN_HOME}/bin/mvn -f ${projectPath}/pom.xml clean test"
+                    sh "${MVN_HOME}/bin/mvn -f ${PROJECT_PATH}/pom.xml clean test"
                 }
             }
         }
@@ -60,7 +55,7 @@ pipeline {
             steps {
                 // Dépend du plugin utilisé pour la génération des rapports
                 // Exemple avec le plugin JUnit
-                junit '${projectPath}/target/surefire-reports/*.xml'
+                junit "${PROJECT_PATH}/target/surefire-reports/*.xml"
             }
         }
     }
