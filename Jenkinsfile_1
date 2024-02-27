@@ -1,46 +1,58 @@
 pipeline {
     agent any
 
+    options {
+        // Les options globales du pipeline peuvent être définies ici
+    }
+
+    environment {
+        // Les variables d'environnement globales peuvent être définies ici
+    }
+
+    tools {
+        // Configurez l'outil Maven ici
+        maven 'Maven'
+    }
+
     stages {
+        stage('Checkout') {
+            steps {
+                // Étape de récupération du code depuis Git
+                checkout scm
+            }
+        }
+
         stage('Build') {
             steps {
-                script {
-                    // Étape de compilation
-                    sh 'mvn clean compile'
-                }
+                // Étape de compilation
+                sh 'mvn clean compile'
             }
         }
 
         stage('Tests') {
             steps {
-                script {
-                    // Étape d'exécution des tests
-                    sh 'mvn test'
-                }
+                // Étape d'exécution des tests
+                sh 'mvn test'
             }
         }
 
         stage('Test de non-régression') {
             steps {
-                script {
-                    // Modifier un test pour le faire échouer
-                    // ...
+                // Modifier un test pour le faire échouer
+                // ...
 
-                    // Vérifier que la compilation fonctionne
-                    sh 'mvn compile'
+                // Vérifier que la compilation fonctionne
+                sh 'mvn compile'
 
-                    // Vérifier que le test échoue et remonte en KO
-                    sh 'mvn test'
-                }
+                // Vérifier que le test échoue et remonte en KO
+                sh 'mvn test'
             }
         }
 
         stage('Ignorer le test') {
             steps {
-                script {
-                    // Ignorer le test via Maven
-                    sh 'mvn test -Dtest=CalculatriceTest#testDiv'
-                }
+                // Ignorer le test via Maven
+                sh 'mvn test -Dtest=CalculatriceTest#testDiv'
             }
         }
     }
