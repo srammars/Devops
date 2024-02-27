@@ -1,12 +1,24 @@
 pipeline {
     agent any
 
+    environment {
+        MVN_HOME = tool 'maven-3.5.2'
+    }
+
     stages {
+        stage('Print Maven Version') {
+            steps {
+                script {
+                    sh '${MVN_HOME}/bin/mvn --version'
+                }
+            }
+        }
+
         stage('Build and Test') {
             steps {
                 script {
-                    // Étape de construction (Maven, Gradle, etc.)
-                    sh 'mvn clean test' // Ou './gradlew clean test' pour Gradle
+                    // Utilisez le chemin complet de l'exécutable Maven
+                    sh '${MVN_HOME}/bin/mvn clean test'
                 }
             }
         }
@@ -24,7 +36,7 @@ pipeline {
             steps {
                 script {
                     // Vérifier que la compilation fonctionne et que le test échoue
-                    sh 'mvn clean test'
+                    sh '${MVN_HOME}/bin/mvn clean test'
                 }
             }
         }
@@ -42,7 +54,7 @@ pipeline {
             steps {
                 script {
                     // Vérifier que la compilation fonctionne avec le test ignoré
-                    sh 'mvn clean test'
+                    sh '${MVN_HOME}/bin/mvn clean test'
                 }
             }
         }
