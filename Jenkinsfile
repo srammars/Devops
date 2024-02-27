@@ -2,9 +2,8 @@ pipeline {
     agent any
 
     environment {
-        MVN_HOME = tool 'maven-3.5.2'
+        MVN_HOME = tool 'maven-3.5.2' // Assurez-vous que le nom ici correspond à celui configuré dans Jenkins
     }
-
     stages {
         stage('Clone repo') {
             steps {
@@ -13,7 +12,7 @@ pipeline {
         }
         stage('Build and Test') {
             steps {
-                dir('demo') {
+                dir('./demo') {
                     script {
                         sh "${MVN_HOME}/bin/mvn clean test"
                     }
@@ -23,7 +22,7 @@ pipeline {
 
         stage('Build project') {
             steps {
-                dir('demo') {
+                dir('./demo') {
                     script {
                         sh "${MVN_HOME}/bin/mvn -B -DskipTests clean package"
                     }
@@ -33,7 +32,7 @@ pipeline {
 
         stage('Generate Javadoc') {
             steps {
-                dir('demo') {
+                dir('./demo') {
                     script {
                         sh "${MVN_HOME}/bin/mvn javadoc:javadoc"
                         sh 'ls -l target/site'
