@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     tools {
-        // Définir l'installation Maven
-        maven 'Maven'
+        // Utilisez le nom correct de l'installation Maven dans Jenkins
+        maven 'maven-3.5.2'
     }
 
     stages {
