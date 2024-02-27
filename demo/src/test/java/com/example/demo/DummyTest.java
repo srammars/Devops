@@ -6,7 +6,7 @@ public class DummyTest {
     @Test
     public void testAdd() {
         DummyTest dummy = new DummyTest();
-        assertEquals(4, dummy.add(2, 2));
+        assertEquals(5, add(2, 2)); // Modification intentionnelle pour échouer le test
     }
 
     @Test
