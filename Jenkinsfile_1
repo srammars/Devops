@@ -1,26 +1,21 @@
 pipeline {
     agent any
 
-    tools {
-        maven 'maven-3.5.2'
-    }
-
     stages {
-        stage('Checkout SCM') {
+        stage('Checkout') {
             steps {
-                checkout scm
+                script {
+                    // Checkout your Git repository
+                    checkout scm
+                }
             }
         }
 
         stage('Build and Test') {
             steps {
-                dir('C:\\Users\\sramm\\OneDrive\\Documents\\Devops\\demo') { 
-                    script {
-                        def mvnHome = tool 'maven-3.5.2'
-                        withEnv(["PATH+MAVEN=${mvnHome}/bin"]) {
-                            sh "mvn clean test"
-                        }
-                    }
+                script {
+                    // Build and run tests with Maven
+                    sh 'mvn clean test'
                 }
             }
         }
@@ -28,9 +23,8 @@ pipeline {
         stage('Modify Test to Fail') {
             steps {
                 script {
-                    // Modification du fichier CalculatorTest.java pour introduire un échec
-                    def calculatorTestPath = "src/test/java/com/example/demo/CalculatorTest.java"
-                    sh "echo \"import static org.junit.Assert.fail;\\n\\npublic class CalculatorTest {\\n\\n@Test\\npublic void testFailing() {\\n    fail(\\\"This test intentionally fails.\\\")\\n}\\n}\" > $calculatorTestPath"
+                    // Simulate a failing test
+                    sh 'echo "public class DummyTest { @Test public void failingTest() { assert false } }" > src/test/java/DummyTest.java'
                 }
             }
         }
@@ -38,10 +32,8 @@ pipeline {
         stage('Build with Failing Test') {
             steps {
                 script {
-                    def mvnHome = tool 'maven-3.5.2'
-                    withEnv(["PATH+MAVEN=${mvnHome}/bin"]) {
-                        sh "mvn clean test -Dtest=!CalculatorTest"
-                    }
+                    // Build and run tests with Maven (expecting a failure)
+                    sh 'mvn clean test'
                 }
             }
         }
@@ -49,10 +41,17 @@ pipeline {
         stage('Ignore Test') {
             steps {
                 script {
-                    def mvnHome = tool 'maven-3.5.2'
-                    withEnv(["PATH+MAVEN=${mvnHome}/bin"]) {
-                        sh "mvn clean test -Dmaven.test.skip=true"
-                    }
+                    // Ignore the failing test via Maven Surefire Plugin configuration
+                    sh 'echo "<properties><maven.test.skip>true</maven.test.skip></properties>" > pom.xml'
+                }
+            }
+        }
+
+        stage('Publish Test Report') {
+            steps {
+                script {
+                    // Assuming your test reports are generated in the target/surefire-reports directory
+                    junit 'target/surefire-reports/**/*.xml'
                 }
             }
         }
@@ -60,7 +59,11 @@ pipeline {
 
     post {
         always {
-            junit '**/target/surefire-reports/*.xml'
+            // Clean up and restore original state
+            script {
+                sh 'mvn clean'
+                sh 'git checkout -- src/test/java/DummyTest.java pom.xml'
+            }
         }
     }
 }
