@@ -13,18 +13,20 @@ pipeline {
             }
         }
 
-        stage('Build and Test') {
-            steps {
-                dir('C:/Users/sramm/OneDrive/Documents/Devops/') {
-                    script {
-                        def mvnHome = tool 'maven-3.5.2'
-                        withEnv(["PATH+MAVEN=${mvnHome}/bin"]) {
-                            sh "mvn clean test"
-                        }
+       stage('Build and Test') {
+        steps {
+            script {
+                dir('C:/Users/sramm/OneDrive/Documents/Devops/demo/') {
+                    // Assurez-vous que le chemin est correct et que Jenkins a les droits nécessaires
+                    // pour accéder à ce répertoire
+                    def mvnHome = tool 'maven-3.5.2'
+                    withEnv(["PATH+MAVEN=${mvnHome}/bin"]) {
+                        sh "mvn clean test"
                     }
                 }
             }
         }
+    }
 
 
         stage('Modify Test to Fail') {
