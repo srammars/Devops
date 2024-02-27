@@ -18,7 +18,7 @@ pipeline {
                 dir('demo') {
                     sh 'ls -la'  // Vérifiez le contenu du répertoire pour voir si le fichier 'mvnw' est présent
                     sh 'chmod +x mvnw'
-                    sh './mvnw clean package -X'
+                    sh './mvnw clean package'
                     sh './mvnw javadoc:javadoc'
                 }
             }
