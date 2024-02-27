@@ -14,13 +14,13 @@ pipeline {
                 git branch: 'devops', url: 'https://github.com/srammars/Devops.git'
             }
         }
-        
+
         stage('Build project') {
             steps {
                 // Naviguer vers le répertoire du projet
                 dir('demo') {
                     sh 'chmod +x mvnw'
-                    sh './mvnw clean package'
+                    sh './mvnw clean package -X'
                     sh './mvnw javadoc:javadoc'
                 }
             }
