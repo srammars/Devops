@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        MVN_HOME = tool 'maven-3.5.2'
+    }
+
     stages {
         stage('Checkout') {
             steps {
