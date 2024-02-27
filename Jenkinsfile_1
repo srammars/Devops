@@ -12,14 +12,13 @@ pipeline {
                 // Naviguer vers le répertoire du projet
                 dir('demo') {
                     sh 'chmod +x mvnw'
-                    sh './mvnw clean package'
+                    sh './mvnw clean package -X'
                     sh './mvnw javadoc:javadoc'
                 }
             }
         }
     }
     post {
-       
         success {
             script {
               
