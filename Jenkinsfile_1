@@ -9,7 +9,7 @@ pipeline {
         stage('Print Maven Version') {
             steps {
                 script {
-                    bat "\"${MVN_HOME}\\bin\\mvn\" --version"
+                    sh "${MVN_HOME}/bin/mvn --version"
                 }
             }
         }
@@ -17,8 +17,7 @@ pipeline {
         stage('Build and Test') {
             steps {
                 script {
-                    // Utilisez le chemin complet de l'exécutable Maven
-                    bat "\"${MVN_HOME}\\bin\\mvn\" clean test"
+                    sh "${MVN_HOME}/bin/mvn clean test"
                 }
             }
         }
@@ -26,8 +25,7 @@ pipeline {
         stage('Modify and Fail Test') {
             steps {
                 script {
-                    // Modifier intentionnellement le test pour le faire échouer
-                    bat "powershell -Command \"(Get-Content -Path .\\src\\test\\java\\com\\example\\demo\\DummyTest.java) -replace 'expectedValue', 'newValue' | Set-Content -Path .\\src\\test\\java\\com\\example\\demo\\DummyTest.java\""
+                    sh "sed -i 's/expectedValue/newValue/' src/test/java/com/example/demo/DummyTest.java"
                 }
             }
         }
@@ -35,8 +33,7 @@ pipeline {
         stage('Verify Compilation and Failing Test') {
             steps {
                 script {
-                    // Vérifier que la compilation fonctionne et que le test échoue
-                    bat "\"${MVN_HOME}\\bin\\mvn\" clean test"
+                    sh "${MVN_HOME}/bin/mvn clean test"
                 }
             }
         }
@@ -45,8 +42,6 @@ pipeline {
 
         stage('Publish Test Reports') {
             steps {
-                // Dépend du plugin utilisé pour la génération des rapports
-                // Exemple avec le plugin JUnit
                 junit '**/target/surefire-reports/*.xml'
             }
         }
