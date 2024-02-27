@@ -5,20 +5,17 @@ public class DummyTest {
 
     @Test
     public void testAdd() {
-        DummyTest dummy = new DummyTest();
-        assertEquals(5, add(2, 2)); // Modification intentionnelle pour échouer le test
+        assertEquals(4, add(2, 2));
     }
 
     @Test
     public void testMulti() {
-        DummyTest dummy = new DummyTest();
-        assertEquals(6, dummy.multi(2, 3));
+        assertEquals(6, multi(2, 3));
     }
 
     @Test
     public void testDiv() {
-        DummyTest dummy = new DummyTest();
-        assertEquals(2, dummy.div(6, 3));
+        assertEquals(2, div(6, 3));
     }
 
     public int add(int a, int b) {
