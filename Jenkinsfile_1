@@ -1,11 +1,6 @@
 pipeline {
     agent any
 
-    // Commentez la section environment si vous n'avez pas besoin de variables d'environnement globales
-    // environment {
-    //     // Les variables d'environnement globales peuvent être définies ici
-    // }
-
     tools {
         // Remplacez 'Maven' par la version spécifique de Maven configurée dans Jenkins
         maven 'maven-3.5.2'
@@ -14,14 +9,12 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Étape de récupération du code depuis Git
                 checkout scm
             }
         }
 
         stage('Build') {
             steps {
-                // Étape de compilation
                 script {
                     sh 'mvn clean compile'
                 }
@@ -30,8 +23,8 @@ pipeline {
 
         stage('Tests') {
             steps {
-                // Étape d'exécution des tests
                 script {
+                    // Assurez-vous que les tests produisent des rapports JUnit au bon emplacement
                     sh 'mvn test'
                 }
             }
@@ -39,16 +32,14 @@ pipeline {
 
         stage('Test de non-régression') {
             steps {
-                // Modifier un test pour le faire échouer
-                // ...
-
-                // Vérifier que la compilation fonctionne
                 script {
+                    // Modifier un test pour le faire échouer
+                    // ...
+
+                    // Vérifier que la compilation fonctionne
                     sh 'mvn compile'
-                }
 
-                // Vérifier que le test échoue et remonte en KO
-                script {
+                    // Vérifier que le test échoue et remonte en KO
                     sh 'mvn test'
                 }
             }
@@ -56,8 +47,8 @@ pipeline {
 
         stage('Ignorer le test') {
             steps {
-                // Ignorer le test via Maven
                 script {
+                    // Ignorer le test via Maven
                     sh 'mvn test -Dtest=CalculatriceTest#testDiv'
                 }
             }
