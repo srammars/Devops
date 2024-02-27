@@ -11,6 +11,15 @@ pipeline {
                 checkout scm
             }
         }
+        stage('Build and Test') {
+            steps {
+                dir('demo') {
+                    script {
+                        sh "${MVN_HOME}/bin/mvn clean test"
+                    }
+                }
+            }
+        }
 
         stage('Build project') {
             steps {
