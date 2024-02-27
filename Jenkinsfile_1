@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         MVN_HOME = tool 'maven-3.5.2'
+        SONARQUBE_HOME = tool 'sonarqube-3.2.0'
     }
 
     stages {
@@ -14,10 +15,8 @@ pipeline {
 
         stage('Build and Test') {
             steps {
-                dir('demo') {
-                    script {
-                        sh "${MVN_HOME}/bin/mvn -B clean test"
-                    }
+                script {
+                    sh "${MVN_HOME}/bin/mvn clean test"
                 }
             }
         }
@@ -25,35 +24,46 @@ pipeline {
         stage('Modify Test to Fail') {
             steps {
                 script {
-                    // Modify DummyTest.java to intentionally fail a test
-                    sh 'echo "    assertEquals(4, add(2, 2)); // Intentional failure" >> demo/src/test/java/DummyTest.java'
+                    // Modify your test to intentionally fail
+                    // For example, update the expected result in one of your test methods
                 }
             }
         }
 
         stage('Build with Failing Test') {
             steps {
-                dir('demo') {
-                    script {
-                        sh "${MVN_HOME}/bin/mvn -B clean test"
-                    }
+                script {
+                    // Ensure that the compilation still occurs even with a failing test
+                    sh "${MVN_HOME}/bin/mvn clean test"
                 }
             }
         }
 
         stage('Ignore Test') {
             steps {
-                dir('demo') {
-                    script {
-                        sh "${MVN_HOME}/bin/mvn -B clean test -Dmaven.test.failure.ignore=true"
-                    }
+                script {
+                    // Ignore the failing test via Maven
+                    sh "${MVN_HOME}/bin/mvn clean test -Dtest=!YourFailingTestClassName"
                 }
             }
         }
 
         stage('Publish Test Report') {
             steps {
-                junit 'demo/target/surefire-reports/*.xml'
+                script {
+                    // Publish the test report
+                    junit '**/target/surefire-reports/*.xml'
+                }
+            }
+        }
+
+        stage('Run SonarQube Analysis') {
+            steps {
+                script {
+                    withSonarQubeEnv('SonarQube Server') {
+                        sh "${MVN_HOME}/bin/mvn sonar:sonar"
+                    }
+                }
             }
         }
     }
