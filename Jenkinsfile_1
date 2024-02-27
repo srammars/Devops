@@ -2,19 +2,6 @@ pipeline {
     agent any
 
     stages {
-        stage('Install Maven') {
-            steps {
-                script {
-                    // Installer Maven
-                    sh 'wget https://apache.mirrors.nublue.co.uk/maven/maven-3/3.8.4/binaries/apache-maven-3.8.4-bin.tar.gz'
-                    sh 'tar xf apache-maven-3.8.4-bin.tar.gz'
-                    sh 'export M2_HOME=$PWD/apache-maven-3.8.4'
-                    sh 'export M2=$M2_HOME/bin'
-                    sh 'export PATH=$M2:$PATH'
-                }
-            }
-        }
-
         stage('Build') {
             steps {
                 script {
@@ -52,7 +39,7 @@ pipeline {
             steps {
                 script {
                     // Ignorer le test via Maven
-                    sh 'mvn test -Dtest=CalculatriceTest#testNomDeLaMethode'
+                    sh 'mvn test -Dtest=CalculatriceTest#testDiv'
                 }
             }
         }
