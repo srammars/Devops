@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    tools {
+        // Assurez-vous que le nom ici correspond à celui configuré dans Jenkins
+        maven 'Maven'
+    }
+
     stages {
         stage('Checkout SCM') {
             steps {
@@ -22,7 +27,7 @@ pipeline {
         stage('Modify Test to Fail') {
             steps {
                 script {
-                    // Modifiez délibérément le test pour provoquer un échec
+                    // Éditez votre test pour le faire échouer
                 }
             }
         }
@@ -41,6 +46,7 @@ pipeline {
         stage('Ignore Test') {
             steps {
                 script {
+                    // Ignorez le test pour obtenir un build correct
                     def mvnHome = tool 'Maven'
                     withEnv(["PATH+MAVEN=${mvnHome}/bin"]) {
                         sh "mvn clean test -Dmaven.test.skip=true"
