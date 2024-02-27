@@ -1,74 +1,58 @@
 pipeline {
     agent any
 
-    environment {
-        MVN_HOME = tool 'maven-3.5.2'
-    }
-
     stages {
-        stage('Clone repo') {
-            steps {
-                checkout scm
-            }
-        }
-
         stage('Build and Test') {
             steps {
-                dir('demo') {
-                    script {
-                        sh "${MVN_HOME}/bin/mvn clean test"
-                    }
+                script {
+                    // Étape de construction (Maven, Gradle, etc.)
+                    sh 'mvn clean test' // Ou './gradlew clean test' pour Gradle
                 }
             }
         }
 
-        stage('Modify Test to Fail') {
+        stage('Modify and Fail Test') {
             steps {
                 script {
-                    // Modify a test to fail
-                    sh 'echo "assertEquals(4, add(2, 2)); // Intentional failure" > demo/src/test/java/DummyTest.java'
+                    // Modifier intentionnellement le test pour le faire échouer
+                    sh "sed -i 's/assertEquals(Integer.valueOf(5), Calculator.add(2, 3))/assertEquals(Integer.valueOf(6), Calculator.add(2, 3))/' src/test/java/CalculatorTest.java"
                 }
             }
         }
 
-        stage('Build with Failing Test') {
+        stage('Verify Compilation and Failing Test') {
             steps {
-                dir('demo') {
-                    script {
-                        sh "${MVN_HOME}/bin/mvn clean test"
-                    }
+                script {
+                    // Vérifier que la compilation fonctionne et que le test échoue
+                    sh 'mvn clean test'
                 }
             }
         }
 
         stage('Ignore Test') {
             steps {
-                dir('demo') {
-                    script {
-                        // Ignore the failing test
-                        sh 'echo "<properties><maven.test.skip>true</maven.test.skip></properties>" > pom.xml'
-                        sh "${MVN_HOME}/bin/mvn clean test"
-                    }
+                script {
+                    // Ignorer le test temporairement
+                    sh "sed -i '/@Test/,/@Ignore/ s/^/\\/\\/ /' src/test/java/CalculatorTest.java"
                 }
             }
         }
 
-        stage('Publish Test Report') {
+        stage('Verify Ignored Test') {
             steps {
-                junit 'demo/target/surefire-reports/**/*.xml'
+                script {
+                    // Vérifier que la compilation fonctionne avec le test ignoré
+                    sh 'mvn clean test'
+                }
             }
         }
-    }
 
-    post {
-        always {
-            echo 'This will always run'
-        }
-        success {
-            echo 'This will run only if the build is successful'
-        }
-        failure {
-            echo 'This will run only if the build fails'
+        stage('Publish Test Reports') {
+            steps {
+                // Dépend du plugin utilisé pour la génération des rapports
+                // Exemple avec le plugin JUnit
+                junit '**/target/surefire-reports/*.xml'
+            }
         }
     }
 }
