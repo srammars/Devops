@@ -16,7 +16,7 @@ pipeline {
             steps {
                 dir('demo') {
                     script {
-                        sh "${MVN_HOME}/bin/mvn -B clean test"
+                        sh "${MVN_HOME}/bin/mvn clean test"
                     }
                 }
             }
@@ -24,9 +24,11 @@ pipeline {
 
         stage('Modify Test to Fail') {
             steps {
-                script {
-                    // Modify DummyTest.java to intentionally fail a test
-                    sh 'echo "    assertEquals(4, add(2, 2)); // Intentional failure" >> demo/src/test/java/DummyTest.java'
+                dir('demo') {
+                    script {
+                        // Modifier un test pour le faire échouer
+                        // Vous pouvez ajouter ici le code pour modifier le test
+                    }
                 }
             }
         }
@@ -35,7 +37,8 @@ pipeline {
             steps {
                 dir('demo') {
                     script {
-                        sh "${MVN_HOME}/bin/mvn -B clean test"
+                        // Assurez-vous que la compilation fonctionne malgré l'échec du test
+                        sh "${MVN_HOME}/bin/mvn clean package"
                     }
                 }
             }
@@ -45,7 +48,8 @@ pipeline {
             steps {
                 dir('demo') {
                     script {
-                        sh "${MVN_HOME}/bin/mvn -B clean test -Dmaven.test.failure.ignore=true"
+                        // Ignorer le test pour obtenir un build correct
+                        sh "${MVN_HOME}/bin/mvn clean package -DskipTests"
                     }
                 }
             }
@@ -53,7 +57,25 @@ pipeline {
 
         stage('Publish Test Report') {
             steps {
-                junit 'demo/target/surefire-reports/*.xml'
+                // Ajouter ici les étapes pour publier le rapport de tests
+                junit 'target/surefire-reports/*.xml'
+            }
+        }
+
+        stage('Generate Javadoc') {
+            steps {
+                dir('demo') {
+                    script {
+                        sh "${MVN_HOME}/bin/mvn javadoc:javadoc"
+                        sh 'ls -l target/site'
+                    }
+                }
+            }
+        }
+
+        stage('Archive Javadoc') {
+            steps {
+                archiveArtifacts artifacts: 'demo/target/site/apidocs/**/*', allowEmptyArchive: true
             }
         }
     }
