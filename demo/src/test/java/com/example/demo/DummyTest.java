@@ -1,41 +1,32 @@
-package com.example.demo;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-import org.junit.jupiter.api.Test;
-import static org.assertj.core.api.Assertions.assertThat;
+public class DummyTest {
 
-public class DemoApplicationTests {
-
-    // Classe Calculatrice définie directement dans le fichier de test
-    static class Calculatrice {
-
-        public int add(int a, int b) {
-            return a + b;
-        }
-
-        public int subtract(int a, int b) {
-            return a - b;
-        }
-
-        public int multiply(int a, int b) {
-            return a * b;
-        }
+    @Test
+    public void testAdd() {
+        assertEquals(4, add(2, 2));
     }
 
     @Test
-    public void testAddition() {
-        Calculatrice calculatrice = new Calculatrice();
-        assertThat(calculatrice.add(2, 3)).isEqualTo(6);
+    public void testMulti() {
+        assertEquals(6, multi(2, 3));
     }
 
     @Test
-    public void testSubtraction() {
-        Calculatrice calculatrice = new Calculatrice();
-        assertThat(calculatrice.subtract(5, 3)).isEqualTo(2);
+    public void testDiv() {
+        assertEquals(2, div(6, 3));
     }
 
-    @Test
-    public void testMultiplication() {
-        Calculatrice calculatrice = new Calculatrice();
-        assertThat(calculatrice.multiply(2, 3)).isEqualTo(6);
+    public int add(int a, int b) {
+        return a + b;
+    }
+
+    public int multi(int a, int b) {
+        return a * b;
+    }
+
+    public int div(int a, int b) {
+        return a / b;
     }
 }
