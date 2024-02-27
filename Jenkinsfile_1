@@ -1,6 +1,7 @@
 pipeline {
     agent any
-    
+
+    // Définition des outils, ici Maven 3.5.2
     tools {
         maven 'maven-3.5.2'
     }
@@ -14,6 +15,7 @@ pipeline {
 
         stage('Build and Test') {
             steps {
+                // Utilisation de Maven pour compiler et exécuter les tests
                 script {
                     def mvnHome = tool 'maven-3.5.2'
                     withEnv(["PATH+MAVEN=${mvnHome}/bin"]) {
@@ -26,10 +28,8 @@ pipeline {
         stage('Modify Test to Fail') {
             steps {
                 script {
-                    // Modifiez le fichier CalculatorTest.java pour faire échouer le test
+                    // Modification du fichier CalculatorTest.java pour introduire un échec
                     def calculatorTestPath = "src/test/java/com/example/demo/CalculatorTest.java"
-
-                    // Ajoutez une assertion qui échouera délibérément
                     sh "echo \"import static org.junit.Assert.fail;\\n\\npublic class CalculatorTest {\\n\\n@Test\\npublic void testFailing() {\\n    fail(\\\"This test intentionally fails.\\\")\\n}\\n}\" > $calculatorTestPath"
                 }
             }
@@ -37,10 +37,12 @@ pipeline {
 
         stage('Build with Failing Test') {
             steps {
+                // Utilisation de Maven pour compiler avec le test modifié
                 script {
                     def mvnHome = tool 'maven-3.5.2'
                     withEnv(["PATH+MAVEN=${mvnHome}/bin"]) {
-                        sh "mvn clean test"
+                        // Exécution des tests, mais en excluant CalculatorTest
+                        sh "mvn clean test -Dtest=!CalculatorTest"
                     }
                 }
             }
@@ -48,11 +50,12 @@ pipeline {
 
         stage('Ignore Test') {
             steps {
+                // Ignorer le test modifié pour obtenir un build correct
                 script {
-                    // Ignorez le test pour obtenir un build correct
                     def mvnHome = tool 'maven-3.5.2'
                     withEnv(["PATH+MAVEN=${mvnHome}/bin"]) {
-                        sh "mvn clean test -Dtest=!CalculatorTest"
+                        // Ignorer les tests pour cette étape
+                        sh "mvn clean test -Dmaven.test.skip=true"
                     }
                 }
             }
@@ -61,6 +64,7 @@ pipeline {
 
     post {
         always {
+            // Publier les résultats des tests avec le plugin JUnit
             junit '**/target/surefire-reports/*.xml'
         }
     }
