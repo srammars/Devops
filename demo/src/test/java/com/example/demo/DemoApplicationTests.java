@@ -7,7 +7,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DemoApplicationTests {
 
    
-    static class Calculatrice {
+    static class DummyTest  {
 
         public int add(int a, int b) {
             return a + b;
@@ -24,20 +24,20 @@ public class DemoApplicationTests {
 
     @Test
     public void testAddition() {
-        Calculatrice calculatrice = new Calculatrice();
-        assertThat(calculatrice.add(2, 3)).isEqualTo(5);
+        DummyTest  DummyTest  = new DummyTest ();
+        assertThat(DummyTest .add(2, 3)).isEqualTo(5);
     }
     
     @Test
     public void testSubtraction() {
-        Calculatrice calculatrice = new Calculatrice();
-        assertThat(calculatrice.subtract(5, 3)).isEqualTo(2);
+        DummyTest  DummyTest  = new DummyTest ();
+        assertThat(DummyTest .subtract(5, 3)).isEqualTo(2);
     }
 
     
     @Test
     public void testMultiplication() {
-        Calculatrice calculatrice = new Calculatrice();
-        assertThat(calculatrice.multiply(2, 3)).isEqualTo(6);
+        DummyTest  DummyTest  = new DummyTest ();
+        assertThat(DummyTest .multiply(2, 3)).isEqualTo(6);
     }
 }
