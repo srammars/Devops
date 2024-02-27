@@ -1,22 +1,54 @@
 pipeline {
     agent any
 
+    environment {
+        MVN_HOME = tool 'maven-3.5.2'
+    }
+
     stages {
-        stage('Build and Test') {
+        stage('Clone repo') {
             steps {
-                script {
-                    // Configuration Maven
-                    def mvnHome = tool 'Maven'
-                    sh "${mvnHome}/bin/mvn clean test"
+                checkout scm
+            }
+        }
+
+        stage('Build project') {
+            steps {
+                dir('demo') {
+                    script {
+                        sh "${MVN_HOME}/bin/mvn -B -DskipTests clean package"
+                    }
                 }
+            }
+        }
+
+        stage('Generate Javadoc') {
+            steps {
+                dir('demo') {
+                    script {
+                        sh "${MVN_HOME}/bin/mvn javadoc:javadoc"
+                        sh 'ls -l target/site'
+                    }
+                }
+            }
+        }
+
+        stage('Archive Javadoc') {
+            steps {
+                archiveArtifacts artifacts: 'demo/target/site/apidocs/**/*', allowEmptyArchive: true
             }
         }
     }
 
     post {
         always {
-            // Archiver les résultats des tests
-            junit '**/target/surefire-reports/*.xml'
+            echo 'This will always run'
+        }
+        success {
+            echo 'This will run only if the build is successful'
+        }
+        failure {
+            echo 'This will run only if the build fails'
         }
     }
 }
