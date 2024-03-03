@@ -1,0 +1,33 @@
+pipeline {
+    agent any 
+
+    tools {
+        maven 'maven-3.5.2' 
+    }
+
+    stages {
+        stage('Checkout SCM') {
+            steps {
+                checkout scm 
+            }
+        }
+
+        stage('Build and Analyze') {
+            steps {
+        
+                dir('demo') {
+                    sh 'chmod +x mvnw'
+   
+
+ 
+                    withSonarQubeEnv('sonar-sujee') {
+                   
+                        sh './mvnw sonar:sonar -Dsonar.projectKey=com.example:demo -Dsonar.host.url=https://ff7e-2a01-e0a-1ef-d6d0-45d1-5c59-9e45-6ff3.ngrok-free.app -Dsonar.token=sqa_b63e614d2010e791f534a5250737c202588c9ac5'
+                    }
+                }
+            }
+        }
+    }
+
+ 
+}

@@ -1,16 +1,11 @@
 pipeline {
-    agent any
-    
+    agent any 
+
+    tools {
+       maven 'maven-3.5.2'  // or another installed version
+    }   
+
     stages {
-        stage('Clean Project') {
-            steps {
-                script {
-                    // Ajouter l'étape de nettoyage ici
-                    sh 'mvn clean'  // Cela dépend de votre configuration de build, ajustez selon votre besoin
-                }
-            }
-        }
-        
         stage('Clone repo') {
             steps {
                 git branch: 'devops', url: 'https://github.com/srammars/Devops.git'
@@ -19,14 +14,15 @@ pipeline {
 
         stage('Build project') {
             steps {
+                // Naviguer vers le répertoire du projet
                 dir('demo') {
-                    sh "'${tool 'maven-3.5.2'}/bin/mvn' clean package"
-                    sh "'${tool 'maven-3.5.2'}/bin/mvn' javadoc:javadoc"
+                    sh 'ls -la'  // Vérifiez le contenu du répertoire pour voir si le fichier 'mvnw' est présent
+                    sh 'chmod +x mvnw'
+                    sh './mvnw clean package'
+                    sh './mvnw javadoc:javadoc'
                 }
             }
         }
-
-        // ... autres étapes du pipeline
     }
 
     post {
