@@ -17,6 +17,7 @@
     <properties>
         <sonar.token>sqa_b63e614d2010e791f534a5250737c202588c9ac5</sonar.token>
         <java.version>17</java.version>
+        <sonar.java.binaries>target/classes</sonar.java.binaries>
     </properties>
     <dependencies>
         <dependency>
